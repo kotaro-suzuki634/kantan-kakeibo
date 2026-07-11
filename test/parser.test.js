@@ -12,6 +12,7 @@ test('指定された自然文を分類できる',()=>{
   for(const [text,category,amount] of cases){const p=parseTransaction(text,[],now);assert.equal(p.category,category);assert.equal(p.amount,amount);}
 });
 test('スタバは削減可能',()=>assert.equal(parseTransaction('スタバ 550円',[],now).foodNecessity,'削減可能'));
-test('昨日の日付を抽出',()=>assert.equal(parseTransaction('昨日コンビニでお菓子300円',[],now).transactionDate,'2026-07-10'));
+test('セブンは食費かつ削減可能',()=>{const p=parseTransaction('セブンでお昼 680円',[],now);assert.equal(p.category,'食費');assert.equal(p.foodNecessity,'削減可能');});
+test('昨日の日付と店名を抽出',()=>{const p=parseTransaction('昨日コンビニでお菓子300円',[],now);assert.equal(p.transactionDate,'2026-07-10');assert.equal(p.merchant,'コンビニ');});
 test('修正履歴を優先',()=>assert.equal(parseTransaction('謎カフェ 500円',[{keyword:'謎カフェ',category:'趣味',food_necessity:'未判定'}],now).category,'趣味'));
 test('予算判定と予測',()=>{assert.equal(budgetStatus(92).label,'使いすぎ注意');assert.equal(monthlyProjection(10000,10,30),30000);});
