@@ -6,8 +6,8 @@ const categoryWords = {
   '趣味': ['映画','ゲーム','ライブ','旅行','飲み会','カラオケ','グッズ','サブスク','遊び'],
   '食費': ['コンビニ','セブン','ファミマ','ローソン','大戸屋','マック','カフェ','スタバ','昼食','夕食','朝食','ランチ','飲み物','お菓子','食事','学食','水']
 };
-const merchants = ['セブン','ファミマ','ローソン','大戸屋','マック','スタバ','Amazon','Netflix','JR','東急'];
-const reducible = ['カフェ','スタバ','お菓子','コンビニ','デリバリー','深夜','飲み会','ぜいたく'];
+const merchants = ['コンビニ','セブン','ファミマ','ローソン','大戸屋','マック','スタバ','Amazon','Netflix','JR','東急'];
+const reducible = ['カフェ','スタバ','お菓子','コンビニ','セブン','ファミマ','ローソン','デリバリー','深夜','飲み会','ぜいたく'];
 const necessary = ['朝食','昼食','夕食','ランチ','スーパー','食材','水','学食','大戸屋'];
 
 function parseDate(text, now = new Date()) {
@@ -61,4 +61,3 @@ function parseTransaction(text, learnedRules = [], now = new Date()) {
 }
 
 module.exports = { parseTransaction, parseDate, extractAmount, baseClassification };
-
