@@ -63,7 +63,7 @@ app.get('/',async(req,res,next)=>{try{
 }catch(e){next(e);}});
 
 app.get('/input',(req,res)=>res.render('input',{title:'かんたん入力',parsed:null,text:''}));
-app.post('/transactions/parse',async(req,res,next)=>{try{const text=String(req.body.text||'').trim();if(!text)return sendError(res,'入力文を入力してください。');const rules=(await query('SELECT * FROM classification_rules WHERE user_id=$1 ORDER BY priority DESC',[req.userId])).rows;const parsed=parseTransaction(text,rules);if(!parsed.amount)return sendError(res,'金額を「680円」のように入力してください。');if(req.accepts('json')==='json')return res.json(parsed);res.render('input',{title:'解析結果',parsed,text});}catch(e){next(e);}});
+app.post('/transactions/parse',async(req,res,next)=>{try{const text=String(req.body.text||'').trim();if(!text)return sendError(res,'入力文を入力してください。');const rules=(await query('SELECT * FROM classification_rules WHERE user_id=$1 ORDER BY priority DESC',[req.userId])).rows;const parsed=parseTransaction(text,rules);if(!parsed.amount)return sendError(res,'金額を「680円」のように入力してください。');if(req.xhr||String(req.get('accept')||'').includes('application/json'))return res.json(parsed);res.render('input',{title:'解析結果',parsed,text});}catch(e){next(e);}});
 app.post('/transactions',async(req,res,next)=>{try{
   const amount=positiveInt(req.body.amount),date=validDate(req.body.transaction_date),category=categories.includes(req.body.category)?req.body.category:'その他';
   if(!amount||!date)return sendError(res,'金額と日付を正しく入力してください。');
@@ -99,4 +99,3 @@ app.post('/settings/budgets',async(req,res,next)=>{try{for(const category of ['�
 app.use((req,res)=>res.status(404).render('error',{title:'ページが見つかりません',status:404,message:'URLをご確認ください。'}));
 app.use((err,req,res,next)=>{console.error(err.message);if(res.headersSent)return next(err);res.status(500).render('error',{title:'エラー',status:500,message:process.env.NODE_ENV==='production'?'処理中にエラーが発生しました。しばらくしてからお試しください。':err.message});});
 module.exports = app;
-
