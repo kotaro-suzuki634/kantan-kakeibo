@@ -47,7 +47,9 @@ function parseTransaction(text, learnedRules = [], now = new Date()) {
   const amount = extractAmount(original);
   let classified = baseClassification(original);
   const merchant = findMerchant(original);
-  const learned = learnedRules.find(r => (r.merchant && merchant && r.merchant.toLowerCase()===merchant.toLowerCase()) || (r.keyword && original.toLowerCase().includes(r.keyword.toLowerCase())));
+  // Exact merchant corrections are stronger than keyword corrections.
+  const learned = learnedRules.find(r => r.merchant && merchant && r.merchant.toLowerCase()===merchant.toLowerCase())
+    || learnedRules.find(r => r.keyword && original.toLowerCase().includes(r.keyword.toLowerCase()));
   if (learned) classified = { category: learned.category, confidence:'high', matchedKeyword:learned.keyword };
   const type = classified.category === '収入' ? 'income' : 'expense';
   let foodNecessity = '未判定';
@@ -57,7 +59,7 @@ function parseTransaction(text, learnedRules = [], now = new Date()) {
     else if (necessary.some(w=>original.includes(w))) foodNecessity='必要支出';
   }
   const cleaned = original.replace(/(?:¥|￥)?\s*[0-9０-９][0-9０-９,，]*\s*(?:円|えん)?/g,'').replace(/(昨日|一昨日|今日|本日|\d{1,2}月\d{1,2}日(?:に)?)/g,'').replace(/(?:で|に)\s*$/,'').trim();
-  return { amount, title: merchant || cleaned || '支出', merchant, category:classified.category, transactionDate:parseDate(original,now), originalText:original, type, foodNecessity, confidence: classified.confidence, memo: cleaned };
+  return { amount, title: merchant || cleaned || '支出', merchant, category:classified.category, transactionDate:parseDate(original,now), originalText:original, type, foodNecessity, confidence: classified.confidence, memo: cleaned, learnedRuleId: learned?.id || null };
 }
 
 module.exports = { parseTransaction, parseDate, extractAmount, baseClassification };
