@@ -33,9 +33,9 @@ async function initDatabase() {
   const defaults = [['固定費',40],['食費',20],['交通費',10],['生活費',10],['趣味',10],['貯金',10]];
   for (const [category, percentage] of defaults) {
     const result = await pool.query(`INSERT INTO budget_settings (user_id, category, category_id, percentage)
-      VALUES (1,$1,(SELECT id FROM categories WHERE user_id=1 AND name=$1),$2)
+      VALUES (1,$1,(SELECT id FROM categories WHERE user_id=1 AND name=$2),$3)
       ON CONFLICT (user_id,category) DO UPDATE SET category_id=COALESCE(budget_settings.category_id,EXCLUDED.category_id)
-      RETURNING id`, [category, percentage]);
+      RETURNING id`, [category, category, percentage]);
     if (!result.rowCount) throw new Error('予算設定の初期化に失敗しました');
   }
 }
